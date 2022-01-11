@@ -1,28 +1,42 @@
 package main
 
 import (
-	"dev/go-crawler/accounts"
-	"dev/go-crawler/mydict"
+	"errors"
 	"fmt"
-	"log"
+	"net/http"
 )
 
+var errReqFailed = errors.New("request failed")
+
 func main() {
-	account := accounts.NewAccount("alex")
-	account.Deposit(10)
-	fmt.Println(account.Balance())
-	err := account.Withdraw(20)
-	if err != nil {
-		log.Println(err)
+	var results = make(map[string]string)
+	urls := []string{
+		"https://www.airbnb.com/",
+		"https://www.google.com/",
+		"https://www.amazon.com/",
+		"https://www.raddit.com/",
+		"https://www.google.com/",
+		"https://soundcloud.com/",
+		"https://www.facebook.com/",
+		"https://www.instagram.com/",
+		"https://academy.nomadcoders.co/",
 	}
-	fmt.Println(account.Balance(), account.Owner())
-	account.ChangeOwner("dexter")
-	fmt.Println(account.Balance(), account.Owner())
-	sampledict := mydict.SDictionary{"first": "First Word"}
-	definite, error := sampledict.Search("first")
-	if error != nil {
-		fmt.Println(definite)
-	} else {
-		fmt.Println(err)
+	for _, url := range urls {
+		result := "OK"
+		err := hitURL(url)
+		if err != nil {
+			result = "FAILED"
+		}
+		results[url] = result
 	}
+	fmt.Println(results)
+}
+
+func hitURL(url string) error {
+	fmt.Println("CHECKING URL:", url)
+	resp, err := http.Get(url)
+	if err != nil || resp.StatusCode >= 400 {
+		return errReqFailed
+	}
+	return nil
 }
