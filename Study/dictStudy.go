@@ -1,4 +1,4 @@
-package dictStudy
+package study
 
 import (
 	"dev/go-crawler/accounts"
